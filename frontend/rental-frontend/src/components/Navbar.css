@@ -1,0 +1,39 @@
+.navbar {
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+}
+
+/* Use Poppins for a modern, bold look */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&display=swap');
+
+.navbar-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 700;
+  font-size: 1.05rem;
+  font-family: 'Poppins', Inter, Montserrat, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  letter-spacing: 0.2px;
+}
+
+.brand-logo svg{ display:block; color: #ffffff; }
+.brand-logo{ display:inline-flex; align-items:center; justify-content:center; width:36px; height:36px; border-radius:8px; padding:4px; background: linear-gradient(90deg, rgba(95,124,255,0.08), rgba(179,107,255,0.06)); box-shadow: 0 6px 18px rgba(95,124,255,0.08); }
+.brand-logo svg{ width:28px; height:28px; }
+
+.brand-text{ color: #ffffff; font-weight:700; font-size:1.05rem; }
+
+.brand-logo, .brand-text{ vertical-align: middle; }
+
+.navbar .nav-link { margin-left: 10px; transition: color 0.22s ease; }
+.navbar .nav-link:hover { color: #cfe0ff !important; }
+
+.navbar .btn-link { color: rgba(255,255,255,0.75); padding: 0; text-decoration: none; }
+.navbar .btn-link:hover { color: #cfe0ff !important; }
+
+/* subtle glow on the logo */
+.brand-logo{ box-shadow: 0 6px 20px rgba(95,124,255,0.12), 0 0 12px rgba(179,107,255,0.04); }
+
+/* keep spacing consistent on small screens */
+@media (max-width: 576px){
+  .brand-text{ font-size: 0.98rem; }
+  .brand-logo{ width:32px; height:32px; padding:3px; }
+}

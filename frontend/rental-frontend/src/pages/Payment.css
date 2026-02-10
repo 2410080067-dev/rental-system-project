@@ -1,0 +1,123 @@
+.payment-page {
+  min-height: calc(100vh - 200px);
+  background: #f8f9fa;
+  padding-top: 20px;
+}
+
+.summary-card {
+  background: white;
+  padding: 25px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  margin-bottom: 20px;
+}
+
+.summary-card h4 {
+  color: #333;
+  font-weight: bold;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #667eea;
+  padding-bottom: 10px;
+}
+
+.summary-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  font-size: 0.95rem;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.summary-item:last-of-type {
+  border-bottom: none;
+}
+
+.summary-item span {
+  color: #666;
+}
+
+.summary-item strong {
+  color: #333;
+  font-weight: 600;
+}
+
+.summary-divider {
+  height: 2px;
+  background: #f0f0f0;
+  margin: 15px 0;
+}
+
+.summary-item.total {
+  padding: 15px 0;
+  font-size: 1.1rem;
+  border: none;
+}
+
+.summary-item.total strong {
+  color: #667eea;
+  font-size: 1.4rem;
+}
+
+.payment-form-card {
+  background: white;
+  padding: 25px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.payment-form-card h4 {
+  color: #333;
+  font-weight: bold;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #667eea;
+  padding-bottom: 10px;
+}
+
+.payment-form-card .form-label {
+  font-weight: 600;
+  color: #555;
+  margin-bottom: 8px;
+}
+
+.payment-form-card .form-control {
+  border: 1px solid #ddd;
+  padding: 10px 12px;
+  border-radius: 4px;
+  font-size: 0.95rem;
+}
+
+.payment-form-card .form-control:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+}
+
+.payment-form-card small {
+  display: block;
+  margin-top: 5px;
+}
+
+.payment-form-card .alert {
+  border-left: 4px solid #17a2b8;
+  margin: 20px 0;
+}
+
+.payment-form-card .btn {
+  font-weight: 600;
+  padding: 12px;
+  margin-top: 10px;
+}
+
+.payment-note {
+  text-align: center;
+  padding: 15px;
+  background: #f8f9fa;
+  border-radius: 4px;
+}
+
+@media (max-width: 768px) {
+  .summary-card,
+  .payment-form-card {
+    margin-bottom: 20px;
+  }
+}

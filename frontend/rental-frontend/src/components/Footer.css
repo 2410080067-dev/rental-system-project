@@ -1,0 +1,12 @@
+.footer {
+  margin-top: auto;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.footer p {
+  margin: 0;
+}
+
+.footer small {
+  opacity: 0.8;
+}

@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+# Lightweight mvnw wrapper for Unix-like shells
+if [ -n "$MAVEN_HOME" ]; then
+  "$MAVEN_HOME/bin/mvn" "$@"
+  exit $?
+fi
+if command -v mvn >/dev/null 2>&1; then
+  mvn "$@"
+  exit $?
+fi
+"/c/Maven/apache-maven-3.8.8/bin/mvn" "$@"
+exit $?

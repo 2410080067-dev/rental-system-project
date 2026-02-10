@@ -1,0 +1,98 @@
+.vehicles-page {
+  min-height: calc(100vh - 200px);
+  padding-top: 20px;
+}
+
+.filter-section {
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.filter-section h5 {
+  margin-bottom: 15px;
+  font-weight: bold;
+}
+
+.filter-section .btn-group {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.vehicle-card {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 20px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.vehicle-card:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  transform: translateY(-5px);
+}
+
+.vehicle-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.vehicle-icon {
+  font-size: 2.5rem;
+}
+
+.vehicle-card h4 {
+  margin: 10px 0;
+  font-weight: bold;
+  color: #333;
+}
+
+.vehicle-card .text-muted {
+  font-size: 0.95rem;
+}
+
+.vehicle-card .description {
+  font-size: 0.9rem;
+  color: #666;
+  margin: 10px 0;
+  flex-grow: 1;
+  line-height: 1.4;
+}
+
+.price-section {
+  margin: 15px 0;
+  padding-top: 15px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.price-section h5 {
+  margin: 0;
+  color: #667eea;
+  font-weight: bold;
+  font-size: 1.3rem;
+}
+
+.vehicle-card .btn {
+  margin-top: auto;
+  font-weight: 600;
+}
+
+@media (max-width: 768px) {
+  .filter-section .btn-group {
+    flex-direction: column;
+  }
+
+  .filter-section .btn {
+    width: 100%;
+  }
+
+  .vehicle-card {
+    margin-bottom: 15px;
+  }
+}

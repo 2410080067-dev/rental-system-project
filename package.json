@@ -1,0 +1,9 @@
+{
+  "name": "rental-system-root",
+  "private": true,
+  "scripts": {
+    "start": "npm --prefix frontend/rental-frontend start",
+    "install": "npm --prefix frontend/rental-frontend install",
+    "start:frontend": "npm --prefix frontend/rental-frontend start"
+  }
+}

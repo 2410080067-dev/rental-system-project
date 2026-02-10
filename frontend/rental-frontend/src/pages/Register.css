@@ -1,0 +1,324 @@
+/* Register.css - Ultra-modern premium car-themed registration UI */
+
+:root{
+  --bg-dark-1: #0b1220; /* deep navy */
+  --bg-dark-2: #23132f; /* deep plum */
+  --neon-1: #5f7cff; /* blue */
+  --neon-2: #b36bff; /* purple */
+  --neon-3: #ff6fb5; /* pink */
+  --glass-bg: rgba(255,255,255,0.04);
+  --glass-border: rgba(255,255,255,0.06);
+  --glass-blur: 16px;
+  --text-light: rgba(255,255,255,0.94);
+}
+
+/* Page layout and moving gradient */
+.reg-page{
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding: 48px 20px;
+  background: radial-gradient(800px 400px at 8% 18%, rgba(95,124,255,0.08), transparent 12%),
+              radial-gradient(700px 350px at 92% 88%, rgba(179,107,255,0.06), transparent 12%),
+              linear-gradient(135deg, var(--bg-dark-1) 0%, var(--bg-dark-2) 100%);
+  color: var(--text-light);
+  overflow: hidden;
+}
+
+/* animated subtle overlay shifting color */
+.reg-page::before{
+  content: '';
+  position: absolute;
+  inset: -15%;
+  background: linear-gradient(120deg, rgba(95,124,255,0.03), rgba(179,107,255,0.03), rgba(255,111,181,0.025));
+  filter: blur(80px);
+  animation: gradientShift 14s linear infinite;
+  z-index: 0;
+}
+
+@keyframes gradientShift{
+  0%{ transform: translateX(-6%);} 50%{ transform: translateX(6%);} 100%{ transform: translateX(-6%);} }
+
+/* floating decorative shapes */
+.floating-shapes{ position:absolute; inset:0; pointer-events:none; z-index:1; }
+.shape{ position:absolute; border-radius:50%; filter: blur(44px); opacity:0.9; transform: translate3d(0,0,0); }
+.shape-1{ width:360px; height:360px; left:-80px; top:-80px; background: radial-gradient(circle at 30% 30%, rgba(95,124,255,0.28), rgba(179,107,255,0.16)); animation: floatY 9s ease-in-out infinite; }
+.shape-2{ width:260px; height:260px; right:-40px; top:40px; background: radial-gradient(circle at 70% 40%, rgba(255,111,181,0.14), rgba(179,107,255,0.06)); animation: floatX 8s ease-in-out infinite; }
+.shape-3{ width:200px; height:200px; left:18%; bottom:-80px; background: radial-gradient(circle at 30% 20%, rgba(118,75,162,0.18), rgba(95,124,255,0.06)); animation: floatY 7s ease-in-out infinite; }
+.shape-4{ width:140px; height:140px; right:8%; bottom:10%; background: radial-gradient(circle at 40% 40%, rgba(95,124,255,0.12), rgba(179,107,255,0.06)); animation: floatX 6s ease-in-out infinite; }
+@keyframes floatY{ 0%{ transform: translateY(0);}50%{ transform: translateY(-28px);}100%{ transform: translateY(0);} }
+@keyframes floatX{ 0%{ transform: translateX(0);}50%{ transform: translateX(22px);}100%{ transform: translateX(0);} }
+
+/* ===== Falling stars (premium, optimized) ===== */
+.falling-particles{ position:absolute; inset:0; pointer-events:none; z-index:1; overflow:hidden; }
+.falling-particles .star{ position:absolute; top:-6vh; left:0; width:auto; height:auto; display:block; transform: translate3d(0,0,0); will-change: transform, opacity; }
+.falling-particles .star::before{
+  content: '⭐';
+  display:block;
+  font-family: serif;
+  font-weight:700;
+  color: #ffffff;
+  text-shadow: 0 0 8px rgba(179,107,255,0.16), 0 0 20px rgba(95,124,255,0.08);
+  transform-origin: center center;
+}
+
+/* main fall animation (vertical movement with subtle horizontal drift) */
+@keyframes starFall{ 0%{ transform: translate3d(0,-8vh,0) rotate(0deg) scale(0.85); opacity:0; } 6%{ opacity:0.95; } 100%{ transform: translate3d(24px,110vh,0) rotate(360deg) scale(1.05); opacity:0; } }
+
+/* gentle shimmer on some stars */
+@keyframes shimmer{ 0%{ filter: drop-shadow(0 0 0 rgba(255,255,255,0.0)); } 50%{ filter: drop-shadow(0 0 10px rgba(255,255,255,0.16)); } 100%{ filter: drop-shadow(0 0 0 rgba(255,255,255,0.0)); } }
+
+/* rotation animation for a subset */
+@keyframes slowRotate{ from{ transform: rotate(0deg);} to{ transform: rotate(-360deg);} }
+
+/* Variations: positions, sizes, durations, delays, opacities, rotation */
+.falling-particles .star:nth-child(1){ left:2%; --fs:10px; animation: starFall 18s linear 0.2s infinite; }
+.falling-particles .star:nth-child(2){ left:6%; --fs:14px; animation: starFall 22s linear 1.1s infinite; }
+.falling-particles .star:nth-child(3){ left:10%; --fs:9px; animation: starFall 16s linear 0.6s infinite; }
+.falling-particles .star:nth-child(4){ left:14%; --fs:12px; animation: starFall 20s linear 0.4s infinite; }
+.falling-particles .star:nth-child(5){ left:18%; --fs:18px; animation: starFall 26s linear 2s infinite; }
+.falling-particles .star:nth-child(6){ left:22%; --fs:11px; animation: starFall 17s linear 0.8s infinite; }
+.falling-particles .star:nth-child(7){ left:26%; --fs:13px; animation: starFall 19s linear 0.3s infinite; }
+.falling-particles .star:nth-child(8){ left:30%; --fs:8px; animation: starFall 15s linear 1.8s infinite; }
+.falling-particles .star:nth-child(9){ left:34%; --fs:16px; animation: starFall 24s linear 0.9s infinite; }
+.falling-particles .star:nth-child(10){ left:38%; --fs:10px; animation: starFall 18s linear 0.5s infinite; }
+.falling-particles .star:nth-child(11){ left:42%; --fs:12px; animation: starFall 20s linear 1.6s infinite; }
+.falling-particles .star:nth-child(12){ left:46%; --fs:9px; animation: starFall 16s linear 0.2s infinite; }
+.falling-particles .star:nth-child(13){ left:50%; --fs:14px; animation: starFall 21s linear 2.4s infinite; }
+.falling-particles .star:nth-child(14){ left:54%; --fs:11px; animation: starFall 17s linear 1.1s infinite; }
+.falling-particles .star:nth-child(15){ left:58%; --fs:13px; animation: starFall 19s linear 0.9s infinite; }
+.falling-particles .star:nth-child(16){ left:62%; --fs:8px; animation: starFall 15s linear 2.0s infinite; }
+.falling-particles .star:nth-child(17){ left:66%; --fs:16px; animation: starFall 24s linear 1.4s infinite; }
+.falling-particles .star:nth-child(18){ left:70%; --fs:10px; animation: starFall 18s linear 0.7s infinite; }
+.falling-particles .star:nth-child(19){ left:74%; --fs:12px; animation: starFall 20s linear 1.9s infinite; }
+.falling-particles .star:nth-child(20){ left:78%; --fs:9px; animation: starFall 16s linear 0.5s infinite; }
+.falling-particles .star:nth-child(21){ left:82%; --fs:14px; animation: starFall 22s linear 0.6s infinite; }
+.falling-particles .star:nth-child(22){ left:86%; --fs:11px; animation: starFall 19s linear 1.7s infinite; }
+.falling-particles .star:nth-child(23){ left:90%; --fs:8px; animation: starFall 15s linear 0.3s infinite; }
+.falling-particles .star:nth-child(24){ left:94%; --fs:18px; animation: starFall 28s linear 0.8s infinite; }
+.falling-particles .star:nth-child(25){ left:12%; --fs:10px; animation: starFall 17s linear 1.3s infinite; }
+.falling-particles .star:nth-child(26){ left:28%; --fs:9px; animation: starFall 16s linear 2.1s infinite; }
+.falling-particles .star:nth-child(27){ left:36%; --fs:12px; animation: starFall 20s linear 0.7s infinite; }
+.falling-particles .star:nth-child(28){ left:44%; --fs:14px; animation: starFall 22s linear 1.5s infinite; }
+.falling-particles .star:nth-child(29){ left:68%; --fs:10px; animation: starFall 18s linear 0.4s infinite; }
+.falling-particles .star:nth-child(30){ left:56%; --fs:9px; animation: starFall 16s linear 1.0s infinite; }
+
+/* apply size, color tint, rotation/shimmer selectively */
+.falling-particles .star::before{ font-size: var(--fs); color: rgba(255,255,255,0.98); }
+.falling-particles .star:nth-child(5)::before,
+.falling-particles .star:nth-child(9)::before,
+.falling-particles .star:nth-child(17)::before,
+.falling-particles .star:nth-child(24)::before{ color: var(--neon-2); text-shadow: 0 0 10px rgba(179,107,255,0.28), 0 0 28px rgba(179,107,255,0.12); }
+.falling-particles .star:nth-child(2)::before,
+.falling-particles .star:nth-child(13)::before,
+.falling-particles .star:nth-child(21)::before{ color: var(--neon-1); text-shadow: 0 0 10px rgba(95,124,255,0.3), 0 0 22px rgba(95,124,255,0.12); }
+
+/* slight rotation for some stars (separate animation to avoid transform conflicts) */
+.falling-particles .star:nth-child(3)::before,
+.falling-particles .star:nth-child(7)::before,
+.falling-particles .star:nth-child(15)::before,
+.falling-particles .star:nth-child(19)::before{ animation: slowRotate 8s linear infinite; display:inline-block; }
+
+/* some stars shimmer */
+.falling-particles .star:nth-child(6)::before,
+.falling-particles .star:nth-child(11)::before,
+.falling-particles .star:nth-child(26)::before{ animation: shimmer 2.8s ease-in-out infinite; }
+
+/* performance: reduce star count on small screens */
+@media (max-width: 880px){ .falling-particles .star:nth-child(n+21){ display:none; } }
+
+/* respect reduced motion */
+@media (prefers-reduced-motion: reduce){ .falling-particles .star{ animation: none; opacity:0.8; } .floating-shapes{ animation:none; } }
+
+/* ===== Racing cars background animation (CSS only) ===== */
+.racing-cars{ position:absolute; inset:0; pointer-events:none; z-index:0; overflow:hidden; }
+.racing-car{ position:absolute; left:-10%; top:10%; width:64px; height:24px; display:block; transform: translate3d(0,0,0); will-change: transform, opacity; }
+
+/* small neon car rendered via SVG data URI in pseudo-element */
+.racing-car::before{
+  content: '';
+  display:block;
+  width:100%;
+  height:100%;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  /* thin sleek sports car SVG silhouette (stroke) */
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 160 48'><path d='M6 30 C18 16, 42 10, 70 10 C98 10, 122 16, 154 30 L150 36 L136 36 L128 30 H26 L18 36 H10 Z' fill='none' stroke='%23FFFFFF' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/><circle cx='36' cy='38' r='4' fill='%23FFFFFF'/><circle cx='116' cy='38' r='4' fill='%23FFFFFF'/></svg>");
+  filter: drop-shadow(0 8px 22px rgba(255,255,255,0.04));
+}
+.racing-car{ position:absolute; left:-10%; top:10%; width:110px; height:36px; display:block; transform: translate3d(0,0,0); will-change: transform, opacity; }
+
+/* base pseudo-element for car silhouette - overridden per-car for premium SVGs */
+.racing-car::before{
+  content: '';
+  display:block;
+  width:100%;
+  height:100%;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  filter: drop-shadow(0 8px 28px rgba(255,255,255,0.04));
+}
+
+/* High-quality thin sports car SVG variants (white, blue, purple) assigned per nth-child */
+.racing-cars .racing-car:nth-child(1)::before,
+.racing-cars .racing-car:nth-child(4)::before,
+.racing-cars .racing-car:nth-child(7)::before,
+.racing-cars .racing-car:nth-child(10)::before{ background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 160 48'><path d='M6 30 C18 14, 42 8, 70 8 C98 8, 122 14, 154 30 L140 36 L26 36 L6 30 Z' fill='none' stroke='%23FFFFFF' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/><circle cx='36' cy='38' r='4' fill='%23FFFFFF'/><circle cx='120' cy='38' r='4' fill='%23FFFFFF'/></svg>"); filter: drop-shadow(0 10px 36px rgba(255,255,255,0.08)); }
+
+.racing-cars .racing-car:nth-child(2)::before,
+.racing-cars .racing-car:nth-child(5)::before,
+.racing-cars .racing-car:nth-child(8)::before{ background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 160 48'><path d='M6 30 C18 14, 42 8, 70 8 C98 8, 122 14, 154 30 L140 36 L26 36 L6 30 Z' fill='none' stroke='%235f7cff' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/><circle cx='36' cy='38' r='4' fill='%235f7cff'/><circle cx='120' cy='38' r='4' fill='%235f7cff'/></svg>"); filter: drop-shadow(0 12px 40px rgba(95,124,255,0.22)); }
+
+.racing-cars .racing-car:nth-child(3)::before,
+.racing-cars .racing-car:nth-child(6)::before,
+.racing-cars .racing-car:nth-child(9)::before{ background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 160 48'><path d='M6 30 C18 14, 42 8, 70 8 C98 8, 122 14, 154 30 L140 36 L26 36 L6 30 Z' fill='none' stroke='%23b36bff' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/><circle cx='36' cy='38' r='4' fill='%23b36bff'/><circle cx='120' cy='38' r='4' fill='%23b36bff'/></svg>"); filter: drop-shadow(0 12px 40px rgba(179,107,255,0.22)); }
+
+/* trail for motion - pseudo-element */
+.racing-car::after{
+  content:'';
+  position:absolute;
+  right: -12px;
+  top: 6px;
+  width: 90px;
+  height: 12px;
+  border-radius: 999px;
+  /* trail gradient plus a subtle headlight glow near the car front (layered backgrounds) */
+  background: radial-gradient(circle at 86% 50%, rgba(255,255,255,0.12), rgba(255,255,255,0) 30%), linear-gradient(90deg, rgba(95,124,255,0.14), rgba(179,107,255,0.08), rgba(255,111,181,0.04));
+  background-repeat: no-repeat;
+  filter: blur(12px);
+  opacity: 0.95;
+  transform-origin: left center;
+}
+
+/* drive animation: translate from left to right across viewport with slight vertical drift */
+@keyframes driveLR{ 0%{ transform: translateX(-6vw) translateY(0) rotate(0deg); opacity:0; } 6%{ opacity:1; } 100%{ transform: translateX(120vw) translateY(6px) rotate(0.2deg); opacity:0; } }
+
+/* Create variety per car using nth-child for lane, speed, scale, delay */
+.racing-cars .racing-car:nth-child(1){ top:12%; transform:translate3d(0,0,0) scale(0.9); animation: driveLR 8s linear 0.4s infinite; filter: drop-shadow(0 10px 28px rgba(95,124,255,0.26)); }
+.racing-cars .racing-car:nth-child(2){ top:20%; transform:translate3d(0,0,0) scale(0.75); animation: driveLR 12s linear 1.1s infinite; filter: drop-shadow(0 8px 26px rgba(255,255,255,0.18)); }
+.racing-cars .racing-car:nth-child(3){ top:30%; transform:translate3d(0,0,0) scale(1.0); animation: driveLR 7.5s linear 0.2s infinite; filter: drop-shadow(0 12px 34px rgba(179,107,255,0.28)); }
+.racing-cars .racing-car:nth-child(4){ top:38%; transform:translate3d(0,0,0) scale(0.85); animation: driveLR 10s linear 2s infinite; filter: drop-shadow(0 9px 26px rgba(95,124,255,0.22)); }
+.racing-cars .racing-car:nth-child(5){ top:48%; transform:translate3d(0,0,0) scale(0.7); animation: driveLR 13s linear 0.8s infinite; filter: drop-shadow(0 8px 22px rgba(179,107,255,0.18)); }
+.racing-cars .racing-car:nth-child(6){ top:58%; transform:translate3d(0,0,0) scale(0.95); animation: driveLR 9s linear 1.4s infinite; filter: drop-shadow(0 11px 30px rgba(95,124,255,0.26)); }
+.racing-cars .racing-car:nth-child(7){ top:68%; transform:translate3d(0,0,0) scale(0.8); animation: driveLR 11s linear 0.6s infinite; filter: drop-shadow(0 8px 24px rgba(255,255,255,0.16)); }
+.racing-cars .racing-car:nth-child(8){ top:76%; transform:translate3d(0,0,0) scale(0.9); animation: driveLR 8.6s linear 1.8s infinite; filter: drop-shadow(0 10px 28px rgba(179,107,255,0.2)); }
+.racing-cars .racing-car:nth-child(9){ top:84%; transform:translate3d(0,0,0) scale(0.7); animation: driveLR 14s linear 0.3s infinite; filter: drop-shadow(0 9px 24px rgba(95,124,255,0.18)); }
+.racing-cars .racing-car:nth-child(10){ top:92%; transform:translate3d(0,0,0) scale(0.95); animation: driveLR 9.5s linear 0.9s infinite; filter: drop-shadow(0 12px 34px rgba(255,111,181,0.22)); }
+.racing-cars .racing-car:nth-child(1){ top:12%; transform:translate3d(0,0,0) scale(0.92); animation: driveLR 8s linear 0.4s infinite; filter: drop-shadow(0 10px 38px rgba(95,124,255,0.26)); }
+.racing-cars .racing-car:nth-child(2){ top:20%; transform:translate3d(0,0,0) scale(0.82); animation: driveLR 12s linear 1.1s infinite; filter: drop-shadow(0 8px 30px rgba(95,124,255,0.18)); }
+.racing-cars .racing-car:nth-child(3){ top:30%; transform:translate3d(0,0,0) scale(1.0); animation: driveLR 7.5s linear 0.2s infinite; filter: drop-shadow(0 14px 48px rgba(179,107,255,0.28)); }
+.racing-cars .racing-car:nth-child(4){ top:38%; transform:translate3d(0,0,0) scale(0.9); animation: driveLR 10s linear 2s infinite; filter: drop-shadow(0 9px 36px rgba(95,124,255,0.22)); }
+.racing-cars .racing-car:nth-child(5){ top:48%; transform:translate3d(0,0,0) scale(0.78); animation: driveLR 13s linear 0.8s infinite; filter: drop-shadow(0 8px 32px rgba(179,107,255,0.18)); }
+.racing-cars .racing-car:nth-child(6){ top:58%; transform:translate3d(0,0,0) scale(0.98); animation: driveLR 9s linear 1.4s infinite; filter: drop-shadow(0 12px 44px rgba(95,124,255,0.26)); }
+.racing-cars .racing-car:nth-child(7){ top:68%; transform:translate3d(0,0,0) scale(0.86); animation: driveLR 11s linear 0.6s infinite; filter: drop-shadow(0 8px 28px rgba(255,255,255,0.16)); }
+.racing-cars .racing-car:nth-child(8){ top:76%; transform:translate3d(0,0,0) scale(0.92); animation: driveLR 8.6s linear 1.8s infinite; filter: drop-shadow(0 10px 34px rgba(179,107,255,0.2)); }
+.racing-cars .racing-car:nth-child(9){ top:84%; transform:translate3d(0,0,0) scale(0.78); animation: driveLR 14s linear 0.3s infinite; filter: drop-shadow(0 9px 28px rgba(95,124,255,0.18)); }
+.racing-cars .racing-car:nth-child(10){ top:92%; transform:translate3d(0,0,0) scale(0.98); animation: driveLR 9.5s linear 0.9s infinite; filter: drop-shadow(0 14px 46px rgba(255,111,181,0.22)); }
+
+/* subtle rotation or tilt on some cars to enhance movement */
+.racing-cars .racing-car:nth-child(1)::before,
+.racing-cars .racing-car:nth-child(3)::before,
+.racing-cars .racing-car:nth-child(6)::before{ animation: slowRotate 6s linear infinite; display:inline-block; }
+
+/* reduce visuals on small screens for performance */
+@media (max-width: 880px){ .racing-cars .racing-car:nth-child(n+7){ display:none; } }
+
+/* reduced motion honor */
+@media (prefers-reduced-motion: reduce){ .racing-cars .racing-car{ animation:none; opacity:0.85; } }
+
+/* main wrapper and grid split */
+.reg-wrapper{ width:100%; max-width:1200px; margin:0 auto; z-index:2; display:flex; align-items:center; justify-content:center; }
+.reg-grid{ width:100%; display:grid; grid-template-columns: 1fr 1fr; gap:32px; align-items:center; }
+
+/* Form Card (glass) */
+.reg-card{
+  width:100%;
+  background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));
+  border-radius: 18px;
+  padding: 48px;
+  box-shadow: 0 40px 120px rgba(2,6,23,0.6), 0 10px 40px rgba(95,124,255,0.06);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  transition: transform 0.6s cubic-bezier(.2,.9,.2,1), box-shadow 0.35s ease;
+  z-index:3;
+}
+.reg-card:hover{ transform: translateY(-8px); box-shadow: 0 50px 140px rgba(95,124,255,0.14), 0 12px 48px rgba(0,0,0,0.6); }
+
+/* header */
+.reg-header{ text-align:left; margin-bottom: 18px; }
+.reg-title{ font-size: 2.2rem; line-height:1.02; color: var(--text-light); font-weight:900; margin-bottom:6px; text-shadow: 0 12px 36px rgba(95,124,255,0.14); }
+.reg-subtitle{ color: rgba(255,255,255,0.9); font-size:1rem; opacity:0.95; }
+
+/* motivational subtitle requirement */
+.reg-subtitle::after{ content: ' Join the rental community and unlock premium vehicles instantly!'; display:block; margin-top:6px; font-weight:600; color: rgba(255,255,255,0.85); font-size:0.95rem; }
+
+.reg-error{ margin:12px 0; background: rgba(255,80,80,0.06); color:#ffb4b4; padding:10px 14px; border-radius:10px; font-weight:600; }
+
+/* form layout */
+.reg-form{ display:flex; flex-direction:column; gap:14px; margin-top:12px; }
+.input-group{ position:relative; display:flex; align-items:center; }
+
+.input-icon{ width:56px; height:56px; display:flex; align-items:center; justify-content:center; border-radius:12px; margin-right:14px; color:#cbd5e1; background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); box-shadow: 0 10px 26px rgba(2,6,23,0.45); flex:0 0 56px; }
+.input-icon i{ color: rgba(255,255,255,0.85); font-size:18px; }
+
+.input-field{ flex:1 1 auto; padding:14px 16px; border-radius:12px; border:1px solid rgba(255,255,255,0.06); background: rgba(0,0,0,0.18); color:var(--text-light); font-size:1rem; outline:none; transition: box-shadow 0.22s ease, transform 0.18s ease, border-color 0.18s ease; }
+.input-field::placeholder{ color: rgba(255,255,255,0.55); }
+
+/* focus: zoom + soft blue glow */
+.input-field:focus{ border-color: rgba(95,124,255,0.98); box-shadow: 0 20px 80px rgba(95,124,255,0.14), 0 0 30px rgba(179,107,255,0.06); transform: scale(1.03); z-index:6; }
+.input-group:focus-within .input-icon{ box-shadow: 0 18px 64px rgba(95,124,255,0.14), 0 0 28px rgba(179,107,255,0.06); transform: translateY(-2px) scale(1.02); }
+
+/* CTA button - gradient + ripple + glow */
+.reg-btn{ margin-top:8px; padding:16px 20px; border-radius:14px; border:none; font-size:1.05rem; font-weight:800; color:white; cursor:pointer; background: linear-gradient(90deg, var(--neon-1), var(--neon-2) 45%, var(--neon-3)); background-size: 240% 100%; box-shadow: 0 18px 60px rgba(179,107,255,0.18), 0 6px 20px rgba(95,124,255,0.14); position:relative; overflow:hidden; transition: transform 0.22s ease, box-shadow 0.22s ease, background-position 0.6s ease; }
+
+/* glow pulse */
+.reg-btn::before{ content:''; position:absolute; inset:-6px; background: radial-gradient(circle at 20% 30%, rgba(255,255,255,0.06), transparent 12%), radial-gradient(circle at 80% 70%, rgba(255,255,255,0.03), transparent 20%); mix-blend-mode: overlay; pointer-events:none; opacity:1; transition: opacity 0.25s ease; }
+.reg-btn:hover::before{ opacity:0.9; }
+
+/* ripple overlay */
+.reg-btn::after{ content:''; position:absolute; width:140%; height:140%; left:-20%; top:-20%; background: radial-gradient(circle, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.02) 25%, transparent 35%); transform: scale(0); opacity:0; transition: transform 0.6s cubic-bezier(.2,.9,.2,1), opacity 0.4s ease; pointer-events:none; }
+.reg-btn:hover{ transform: translateY(-6px) scale(1.02); background-position:100% 0; box-shadow: 0 30px 110px rgba(179,107,255,0.22), 0 8px 28px rgba(95,124,255,0.18); }
+.reg-btn:hover::after{ transform: scale(1); opacity:1; }
+.reg-btn:active{ transform: translateY(-2px) scale(0.995); }
+.reg-btn:disabled{ opacity:0.6; cursor:not-allowed; }
+
+/* visual / illustration card */
+.reg-visual{ display:flex; align-items:center; justify-content:center; z-index:3; }
+.visual-card{ position:relative; width:100%; border-radius:18px; overflow:hidden; box-shadow: 0 50px 150px rgba(2,6,23,0.6); background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); padding:12px; border:1px solid rgba(255,255,255,0.04); }
+.visual-card img{ width:100%; height:560px; object-fit:cover; border-radius:14px; display:block; transform: translateZ(0); transition: transform 1s cubic-bezier(.2,.9,.2,1), filter 0.8s ease; }
+.visual-card:hover img{ transform: scale(1.03) translateY(-6px); filter: saturate(1.06) contrast(1.02); }
+.visual-caption{ margin-top:12px; color: rgba(255,255,255,0.92); font-weight:800; text-align:center; padding:8px 10px; background: linear-gradient(90deg, rgba(0,0,0,0.12), rgba(0,0,0,0.06)); border-radius:10px; backdrop-filter: blur(6px); }
+
+.visual-card::after{ content:''; position:absolute; left:8%; right:8%; top:18%; height:10px; border-radius:999px; background: linear-gradient(90deg, rgba(95,124,255,0.2), rgba(179,107,255,0.18)); filter: blur(20px); pointer-events:none; }
+
+/* slide animations */
+@keyframes slideInLeft{ from{ opacity:0; transform: translateX(-28px);} to{ opacity:1; transform: translateX(0);} }
+@keyframes slideInRight{ from{ opacity:0; transform: translateX(28px);} to{ opacity:1; transform: translateX(0);} }
+.slide-in-left{ animation: slideInLeft 0.9s cubic-bezier(.2,.9,.2,1) both; }
+.slide-in-right{ animation: slideInRight 1s cubic-bezier(.2,.9,.2,1) 0.06s both; }
+
+/* small screens responsive */
+@media (max-width: 880px){
+  .reg-grid{ grid-template-columns: 1fr; }
+  .visual-card img{ height:260px; }
+  .reg-card{ order:0; padding:28px; }
+  .reg-visual{ order:1; margin-top:18px; }
+}
+
+@media (max-width: 520px){
+  .reg-card{ padding:20px; border-radius:14px; }
+  .input-icon{ width:48px; height:48px; margin-right:10px; }
+  .input-field{ padding:12px; font-size:0.98rem; }
+  .reg-title{ font-size:1.4rem; }
+  .visual-card img{ height:180px; }
+}
+
+/* page fade-in (overall) */
+@keyframes pageFadeIn{ from{ opacity:0; transform: translateY(6px);} to{ opacity:1; transform:none;} }
+.reg-page{ animation: pageFadeIn 0.6s ease both; }
+
