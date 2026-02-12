@@ -70,19 +70,29 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        // Read allowed origins from environment/properties with fallbacks
+        // Use allowedOriginPatterns to support credentials + wildcard patterns
+        // Always include deployed Vercel frontend and localhost for dev
+        java.util.ArrayList<String> patterns = new java.util.ArrayList<>(Arrays.asList(
+            "https://rental-system-project.vercel.app",
+            "https://*.vercel.app",
+            "http://localhost:3000",
+            "http://localhost:3001",
+            "http://localhost:3002"
+        ));
+
+        // Also add any extra origins from environment variable
         String corsOrigins = System.getenv("CORS_ALLOWED_ORIGINS");
         if (corsOrigins != null && !corsOrigins.isEmpty()) {
-            configuration.setAllowedOrigins(Arrays.asList(corsOrigins.split(",")));
-        } else {
-            configuration.setAllowedOrigins(Arrays.asList(
-                "http://localhost:3000",
-                "http://localhost:3001",
-                "http://localhost:3002"
-            ));
+            for (String origin : corsOrigins.split(",")) {
+                String trimmed = origin.trim();
+                if (!trimmed.isEmpty() && !patterns.contains(trimmed)) {
+                    patterns.add(trimmed);
+                }
+            }
         }
 
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedOriginPatterns(patterns);
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setExposedHeaders(Arrays.asList("Authorization"));
         configuration.setAllowCredentials(true);

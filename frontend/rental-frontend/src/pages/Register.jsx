@@ -65,7 +65,7 @@ const Register = () => {
       const message = (err && (err.message || err.toString())) || 'An error occurred';
       // Provide clearer guidance when axios reports a network error (CORS/offline/backend not running)
       if (message === 'Network Error') {
-        setError('Network Error: could not reach backend. Ensure the Spring Boot server is running at http://localhost:8081');
+        setError('Network Error: could not reach backend. The server may be starting up — please try again in a moment.');
       } else {
         setError(message);
       }
