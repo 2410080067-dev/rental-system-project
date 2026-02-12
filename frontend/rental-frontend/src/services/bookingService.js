@@ -1,50 +1,42 @@
 import API from './api';
 
 /**
- * Service for handling booking-related API calls
+ * Booking Service — handles all booking-related API calls
  */
 
-export const createBooking = async (bookingData) => {
-  try {
-    const response = await API.post('/bookings/book', bookingData);
-    return response.data;
-  } catch (error) {
-    throw error.response?.data || error.message;
-  }
+export const createBooking = async ({ userId, vehicleId, startDate, endDate }) => {
+  const response = await API.post(
+    `/api/bookings?userId=${userId}&vehicleId=${vehicleId}&startDate=${startDate}&endDate=${endDate}`
+  );
+  return response.data;
 };
 
 export const getAllBookings = async () => {
-  try {
-    const response = await API.get('/bookings');
-    return response.data;
-  } catch (error) {
-    throw error.response?.data || error.message;
-  }
+  const response = await API.get('/api/bookings');
+  return response.data;
 };
 
 export const getBookingsByUserId = async (userId) => {
-  try {
-    const response = await API.get(`/bookings/user/${userId}`);
-    return response.data;
-  } catch (error) {
-    throw error.response?.data || error.message;
-  }
+  const response = await API.get(`/api/bookings/user/${userId}`);
+  return response.data;
 };
 
 export const getBookingById = async (id) => {
-  try {
-    const response = await API.get(`/bookings/${id}`);
-    return response.data;
-  } catch (error) {
-    throw error.response?.data || error.message;
-  }
+  const response = await API.get(`/api/bookings/${id}`);
+  return response.data;
+};
+
+export const approveBooking = async (id) => {
+  const response = await API.put(`/api/bookings/${id}/approve`);
+  return response.data;
 };
 
 export const cancelBooking = async (id) => {
-  try {
-    const response = await API.put(`/bookings/${id}/cancel`);
-    return response.data;
-  } catch (error) {
-    throw error.response?.data || error.message;
-  }
+  const response = await API.put(`/api/bookings/${id}/cancel`);
+  return response.data;
+};
+
+export const completeBooking = async (id) => {
+  const response = await API.put(`/api/bookings/${id}/complete`);
+  return response.data;
 };

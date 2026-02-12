@@ -61,12 +61,13 @@ const Payment = () => {
       const paymentData = {
         bookingId: booking.id,
         amount: booking.totalAmount,
+        paymentMethod: 'CREDIT_CARD',
       };
 
       const response = await processPayment(paymentData);
 
       if (response.success) {
-        alert('Payment successful! Your booking is confirmed.');
+        alert(`Payment successful! Transaction ID: ${response.transactionId}`);
         navigate('/bookings');
       } else {
         setError(response.message || 'Payment failed');
@@ -92,7 +93,7 @@ const Payment = () => {
     return <div className="alert alert-danger">Booking not found</div>;
   }
 
-  if (booking.status === 'Completed') {
+  if (booking.status === 'COMPLETED') {
     return (
       <div className="container py-5">
         <div className="alert alert-success text-center">
@@ -118,7 +119,7 @@ const Payment = () => {
 
               <div className="summary-item">
                 <span>Vehicle:</span>
-                <strong>{booking.vehicle?.name}</strong>
+                <strong>{booking.vehicleName}</strong>
               </div>
 
               <div className="summary-item">
@@ -138,7 +139,7 @@ const Payment = () => {
 
               <div className="summary-item">
                 <span>Price Per Day:</span>
-                <strong>${booking.vehicle?.pricePerDay}</strong>
+                <strong>${booking.vehiclePricePerDay}</strong>
               </div>
 
               <div className="summary-divider"></div>

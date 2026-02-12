@@ -2,37 +2,46 @@ import axios from 'axios';
 
 /**
  * Axios instance configured for API communication
- * Base URL points to Spring Boot backend on port 8081
+ * Uses REACT_APP_API_URL env var in production, falls back to localhost for dev
  */
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8081';
+
 const API = axios.create({
-  baseURL: 'http://localhost:8081',
+  baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
-// Add request interceptor to include user token if available
+// Request interceptor — attach JWT token to every request
 API.interceptors.request.use(
   (config) => {
-    const user = localStorage.getItem('user');
-    // Log outgoing request for debugging connectivity
-    console.log('API Request:', config.method?.toUpperCase(), config.baseURL + config.url, config.data || '');
-    if (user) {
-      // placeholder for auth header if needed in future
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
   },
   (error) => Promise.reject(error)
 );
 
-// Response interceptor to log responses and capture network errors
+// Response interceptor — handle 401 (token expired) globally
 API.interceptors.response.use(
-  (response) => {
-    console.log('API Response:', response.status, response.config.url, response.data);
-    return response;
-  },
+  (response) => response,
   (error) => {
-    console.error('API Error:', error.message, error.response || 'no response');
+    if (error.response?.status === 401) {
+      // Token expired or invalid — clear auth and redirect to login
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      localStorage.removeItem('userId');
+      localStorage.removeItem('userRole');
+      // Don't redirect if already on a public page
+      const publicPaths = ['/login', '/register', '/vehicles', '/'];
+      const currentPath = window.location.pathname;
+      if (!publicPaths.some(p => currentPath === p || currentPath.startsWith('/vehicles/'))) {
+        window.location.href = '/login';
+      }
+    }
     return Promise.reject(error);
   }
 );

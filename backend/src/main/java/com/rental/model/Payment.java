@@ -1,35 +1,42 @@
 package com.rental.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.time.LocalDateTime;
 
-/**
- * Payment Entity - Represents payments made for bookings
- */
 @Entity
 @Table(name = "payments")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString(exclude = {"booking"})
+@EqualsAndHashCode(exclude = {"booking"})
 public class Payment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "booking_id", nullable = false)
+    @JsonIgnoreProperties({"payments", "user"})
     private Booking booking;
 
     @Column(nullable = false)
     private Double amount;
 
     @Column(nullable = false)
-    private String status; // "Pending", "Completed", "Failed"
+    @Enumerated(EnumType.STRING)
+    private PaymentStatus status;
+
+    @Column(name = "payment_method")
+    private String paymentMethod;
+
+    @Column(name = "transaction_id")
+    private String transactionId;
 
     @Column(name = "payment_date", nullable = false)
     private LocalDateTime paymentDate;
@@ -40,11 +47,7 @@ public class Payment {
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
-        if (paymentDate == null) {
-            paymentDate = LocalDateTime.now();
-        }
-        if (status == null) {
-            status = "Pending";
-        }
+        if (paymentDate == null) paymentDate = LocalDateTime.now();
+        if (status == null) status = PaymentStatus.PENDING;
     }
 }

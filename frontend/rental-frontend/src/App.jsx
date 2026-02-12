@@ -17,6 +17,7 @@ import BookVehicle from './pages/BookVehicle';
 import BookingHistory from './pages/BookingHistory';
 import Payment from './pages/Payment';
 import AdminDashboard from './pages/AdminDashboard';
+import VehicleDetails from './pages/VehicleDetails';
 
 /**
  * Main App component - Routes and layout
@@ -33,6 +34,7 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/vehicles" element={<Vehicles />} />
+            <Route path="/vehicles/:id" element={<VehicleDetails />} />
 
             {/* Protected Routes */}
             <Route
@@ -62,7 +64,7 @@ function App() {
             <Route
               path="/admin"
               element={
-                <ProtectedRoute>
+                <ProtectedRoute adminOnly>
                   <AdminDashboard />
                 </ProtectedRoute>
               }

@@ -52,11 +52,13 @@ const BookingHistory = () => {
 
   const getStatusBadgeClass = (status) => {
     switch (status) {
-      case 'Active':
+      case 'PENDING':
         return 'bg-warning';
-      case 'Completed':
+      case 'APPROVED':
+        return 'bg-info';
+      case 'COMPLETED':
         return 'bg-success';
-      case 'Cancelled':
+      case 'CANCELLED':
         return 'bg-danger';
       default:
         return 'bg-secondary';
@@ -74,7 +76,7 @@ const BookingHistory = () => {
         <div className="filter-section mb-4">
           <h5>Filter by Status:</h5>
           <div className="btn-group" role="group">
-            {['All', 'Active', 'Completed', 'Cancelled'].map((status) => (
+            {['All', 'PENDING', 'APPROVED', 'COMPLETED', 'CANCELLED'].map((status) => (
               <button
                 key={status}
                 type="button"
@@ -100,7 +102,7 @@ const BookingHistory = () => {
             {filteredBookings.map((booking) => (
               <div key={booking.id} className="booking-card">
                 <div className="booking-header">
-                  <h5>{booking.vehicle?.name || 'Vehicle'}</h5>
+                  <h5>{booking.vehicleName || 'Vehicle'}</h5>
                   <span className={`badge ${getStatusBadgeClass(booking.status)}`}>
                     {booking.status}
                   </span>
@@ -128,12 +130,12 @@ const BookingHistory = () => {
 
                   <div className="detail-item">
                     <span className="label">Total Amount:</span>
-                    <span className="value amount">${booking.totalAmount}</span>
+                    <span className="value amount">${booking.totalPrice}</span>
                   </div>
                 </div>
 
                 <div className="booking-actions">
-                  {booking.status === 'Active' && (
+                  {(booking.status === 'PENDING' || booking.status === 'APPROVED') && (
                     <>
                       <Link
                         to={`/payment/${booking.id}`}
@@ -149,9 +151,9 @@ const BookingHistory = () => {
                       </button>
                     </>
                   )}
-                  {booking.status === 'Completed' && (
+                  {booking.status === 'COMPLETED' && (
                     <div className="text-success">
-                      ✓ Payment Completed
+                      ✓ Completed
                     </div>
                   )}
                 </div>

@@ -1,80 +1,52 @@
 package com.rental.controller;
 
 import com.rental.dto.PaymentDTO;
+import com.rental.mapper.BookingMapper;
 import com.rental.model.Payment;
 import com.rental.service.PaymentService;
-import org.springframework.beans.factory.annotation.Autowired;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
-/**
- * Controller for Payment related endpoints
- */
 @RestController
 @RequestMapping("/payment")
+@SecurityRequirement(name = "bearerAuth")
+@Tag(name = "Payments", description = "Payment processing endpoints")
 public class PaymentController {
 
-    @Autowired
-    private PaymentService paymentService;
+    private final PaymentService paymentService;
 
-    /**
-     * Process payment for a booking
-     * POST /api/payment
-     */
-    @PostMapping
-    public ResponseEntity<?> processPayment(@RequestBody PaymentDTO paymentDTO) {
-        try {
-            Long bookingId = paymentDTO.getBookingId();
-            Double amount = paymentDTO.getAmount();
-
-            Payment payment = paymentService.processPayment(bookingId, amount);
-
-            Map<String, Object> response = new HashMap<>();
-            response.put("success", true);
-            response.put("message", "Payment processed successfully");
-            response.put("paymentId", payment.getId());
-            response.put("status", payment.getStatus());
-
-            return ResponseEntity.status(HttpStatus.CREATED).body(response);
-        } catch (RuntimeException e) {
-            Map<String, Object> error = new HashMap<>();
-            error.put("success", false);
-            error.put("message", e.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
-        } catch (Exception e) {
-            Map<String, Object> error = new HashMap<>();
-            error.put("success", false);
-            error.put("message", e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
-        }
+    public PaymentController(PaymentService paymentService) {
+        this.paymentService = paymentService;
     }
 
-    /**
-     * Get payment by booking ID
-     * GET /api/payment/{bookingId}
-     */
+    @PostMapping
+    @Operation(summary = "Process payment for a booking")
+    public ResponseEntity<Map<String, Object>> processPayment(
+            @RequestParam Long bookingId,
+            @RequestParam double amount,
+            @RequestParam(defaultValue = "CREDIT_CARD") String paymentMethod) {
+        Payment payment = paymentService.processPayment(bookingId, amount, paymentMethod);
+        return ResponseEntity.status(HttpStatus.CREATED).body(Map.of(
+                "success", true,
+                "message", "Payment processed successfully",
+                "transactionId", payment.getTransactionId(),
+                "status", payment.getStatus().name(),
+                "amount", payment.getAmount(),
+                "bookingId", bookingId
+        ));
+    }
+
     @GetMapping("/{bookingId}")
+    @Operation(summary = "Get payment by booking ID")
     public ResponseEntity<?> getPaymentByBookingId(@PathVariable Long bookingId) {
-        try {
-            Optional<Payment> payment = paymentService.getPaymentByBookingId(bookingId);
-            if (payment.isPresent()) {
-                return ResponseEntity.ok(payment.get());
-            } else {
-                Map<String, Object> error = new HashMap<>();
-                error.put("success", false);
-                error.put("message", "Payment not found for booking");
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
-            }
-        } catch (Exception e) {
-            Map<String, Object> error = new HashMap<>();
-            error.put("success", false);
-            error.put("message", e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
-        }
+        return paymentService.getPaymentByBookingId(bookingId)
+                .<ResponseEntity<?>>map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 }

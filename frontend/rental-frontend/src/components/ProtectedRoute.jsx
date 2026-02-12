@@ -1,12 +1,19 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
-import { isLoggedIn } from '../services/authService';
+import { isLoggedIn, isAdmin } from '../services/authService';
 
 /**
- * Protected Route Component - Restricts access to authenticated users only
+ * Protected Route Component — supports role-based access
+ * @param {boolean} adminOnly — if true, only admins can access
  */
-const ProtectedRoute = ({ children }) => {
-  return isLoggedIn() ? children : <Navigate to="/login" />;
+const ProtectedRoute = ({ children, adminOnly = false }) => {
+  if (!isLoggedIn()) {
+    return <Navigate to="/login" />;
+  }
+  if (adminOnly && !isAdmin()) {
+    return <Navigate to="/" />;
+  }
+  return children;
 };
 
 export default ProtectedRoute;

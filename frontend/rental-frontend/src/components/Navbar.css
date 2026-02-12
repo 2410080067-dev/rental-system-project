@@ -15,9 +15,17 @@
   letter-spacing: 0.2px;
 }
 
-.brand-logo svg{ display:block; color: #ffffff; }
-.brand-logo{ display:inline-flex; align-items:center; justify-content:center; width:36px; height:36px; border-radius:8px; padding:4px; background: linear-gradient(90deg, rgba(95,124,255,0.08), rgba(179,107,255,0.06)); box-shadow: 0 6px 18px rgba(95,124,255,0.08); }
-.brand-logo svg{ width:28px; height:28px; }
+.brand-logo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  padding: 4px;
+  background: linear-gradient(135deg, rgba(255,255,255,0.15), rgba(255,255,255,0.05));
+  box-shadow: 0 6px 18px rgba(95, 124, 255, 0.08);
+}
 
 .brand-text{ color: #ffffff; font-weight:700; font-size:1.05rem; }
 

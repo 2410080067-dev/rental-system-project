@@ -86,14 +86,10 @@ const BookVehicle = () => {
       };
 
       const response = await createBooking(bookingData);
-      if (response.success) {
-        alert('Booking created successfully!');
-        navigate(`/payment/${response.bookingId}`);
-      } else {
-        setError(response.message || 'Booking failed');
-      }
+      alert('Booking created successfully!');
+      navigate(`/payment/${response.id}`);
     } catch (err) {
-      setError(err.message || 'An error occurred');
+      setError(err.response?.data?.message || err.message || 'An error occurred');
     } finally {
       setSubmitting(false);
     }
@@ -136,10 +132,10 @@ const BookVehicle = () => {
                 <strong>
                   <span
                     className={`badge ${
-                      vehicle.status === 'Available' ? 'bg-success' : 'bg-danger'
+                      vehicle.available ? 'bg-success' : 'bg-danger'
                     }`}
                   >
-                    {vehicle.status}
+                    {vehicle.available ? 'Available' : 'Not Available'}
                   </span>
                 </strong>
               </p>
@@ -204,7 +200,7 @@ const BookVehicle = () => {
                 <button
                   type="submit"
                   className="btn btn-success btn-lg w-100"
-                  disabled={submitting || vehicle.status !== 'Available'}
+                  disabled={submitting || !vehicle.available}
                 >
                   {submitting ? 'Processing...' : 'Proceed to Payment'}
                 </button>

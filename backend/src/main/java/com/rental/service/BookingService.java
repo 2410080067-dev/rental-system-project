@@ -1,148 +1,161 @@
 package com.rental.service;
 
-import com.rental.model.Booking;
-import com.rental.model.User;
-import com.rental.model.Vehicle;
+import com.rental.dto.BookingDTO;
+import com.rental.exception.BadRequestException;
+import com.rental.exception.ResourceNotFoundException;
+import com.rental.mapper.BookingMapper;
+import com.rental.model.*;
 import com.rental.repository.BookingRepository;
 import com.rental.repository.UserRepository;
 import com.rental.repository.VehicleRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
-/**
- * Service class for Booking-related business logic
- */
 @Service
 public class BookingService {
 
-    @Autowired
-    private BookingRepository bookingRepository;
+    private final BookingRepository bookingRepository;
+    private final UserRepository userRepository;
+    private final VehicleRepository vehicleRepository;
+    private final BookingMapper bookingMapper;
 
-    @Autowired
-    private UserRepository userRepository;
+    public BookingService(BookingRepository bookingRepository, UserRepository userRepository,
+                          VehicleRepository vehicleRepository, BookingMapper bookingMapper) {
+        this.bookingRepository = bookingRepository;
+        this.userRepository = userRepository;
+        this.vehicleRepository = vehicleRepository;
+        this.bookingMapper = bookingMapper;
+    }
 
-    @Autowired
-    private VehicleRepository vehicleRepository;
+    @Transactional
+    public BookingDTO createBooking(Long userId, Long vehicleId, LocalDate startDate, LocalDate endDate) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
 
-    /**
-     * Create a new booking
-     */
-    public Booking createBooking(Long userId, Long vehicleId, LocalDate startDate, LocalDate endDate) {
-        // Validate user exists
-        Optional<User> user = userRepository.findById(userId);
-        if (user.isEmpty()) {
-            throw new RuntimeException("User not found with id: " + userId);
+        Vehicle vehicle = vehicleRepository.findById(vehicleId)
+                .orElseThrow(() -> new ResourceNotFoundException("Vehicle not found with id: " + vehicleId));
+
+        if (!vehicle.isAvailable()) {
+            throw new BadRequestException("Vehicle is not available for booking");
         }
 
-        // Validate vehicle exists
-        Optional<Vehicle> vehicle = vehicleRepository.findById(vehicleId);
-        if (vehicle.isEmpty()) {
-            throw new RuntimeException("Vehicle not found with id: " + vehicleId);
-        }
-
-        // Validate dates
         if (startDate.isAfter(endDate)) {
-            throw new RuntimeException("Start date must be before end date");
+            throw new BadRequestException("Start date must be before end date");
         }
 
-        // Calculate total amount
-        long daysCount = ChronoUnit.DAYS.between(startDate, endDate) + 1;
-        Double totalAmount = vehicle.get().getPricePerDay() * daysCount;
+        if (startDate.isBefore(LocalDate.now())) {
+            throw new BadRequestException("Start date cannot be in the past");
+        }
 
-        // Create booking
+        // Check for double booking
+        List<Booking> overlapping = bookingRepository.findOverlappingBookings(vehicleId, startDate, endDate);
+        if (!overlapping.isEmpty()) {
+            throw new BadRequestException("Vehicle is already booked for the selected dates");
+        }
+
+        long daysCount = ChronoUnit.DAYS.between(startDate, endDate) + 1;
+        double totalAmount = vehicle.getPricePerDay() * daysCount;
+
         Booking booking = new Booking();
-        booking.setUser(user.get());
-        booking.setVehicle(vehicle.get());
+        booking.setUser(user);
+        booking.setVehicle(vehicle);
         booking.setStartDate(startDate);
         booking.setEndDate(endDate);
         booking.setTotalAmount(totalAmount);
-        booking.setStatus("Active");
+        booking.setStatus(BookingStatus.PENDING);
 
-        // Update vehicle availability to not available (booked)
-        Vehicle vehicleToUpdate = vehicle.get();
-        vehicleToUpdate.setAvailable(false);
-        vehicleRepository.save(vehicleToUpdate);
-
-        return bookingRepository.save(booking);
+        Booking saved = bookingRepository.save(booking);
+        return bookingMapper.toDTO(saved);
     }
 
-    /**
-     * Get all bookings
-     */
-    public List<Booking> getAllBookings() {
-        return bookingRepository.findAll();
+    public List<BookingDTO> getAllBookings() {
+        return bookingRepository.findAll().stream()
+                .map(bookingMapper::toDTO)
+                .collect(Collectors.toList());
     }
 
-    /**
-     * Get bookings by user ID
-     */
-    public List<Booking> getBookingsByUserId(Long userId) {
-        return bookingRepository.findByUserId(userId);
+    public List<BookingDTO> getBookingsByUserId(Long userId) {
+        return bookingRepository.findByUserId(userId).stream()
+                .map(bookingMapper::toDTO)
+                .collect(Collectors.toList());
     }
 
-    /**
-     * Get booking by ID
-     */
-    public Optional<Booking> getBookingById(Long id) {
-        return bookingRepository.findById(id);
+    public BookingDTO getBookingById(Long id) {
+        Booking booking = bookingRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Booking not found with id: " + id));
+        return bookingMapper.toDTO(booking);
     }
 
-    /**
-     * Cancel a booking
-     */
-    public Booking cancelBooking(Long id) {
-        Optional<Booking> booking = bookingRepository.findById(id);
-        if (booking.isPresent()) {
-            Booking existingBooking = booking.get();
-            
-            // Check if already completed
-            if ("Completed".equals(existingBooking.getStatus())) {
-                throw new RuntimeException("Cannot cancel a completed booking");
-            }
+    @Transactional
+    public BookingDTO approveBooking(Long id) {
+        Booking booking = bookingRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Booking not found with id: " + id));
 
-            // Update booking status
-            existingBooking.setStatus("Cancelled");
-            bookingRepository.save(existingBooking);
-
-            // Update vehicle availability back to available
-            Vehicle vehicle = existingBooking.getVehicle();
-            vehicle.setAvailable(true);
-            vehicleRepository.save(vehicle);
-
-            return existingBooking;
+        if (booking.getStatus() != BookingStatus.PENDING) {
+            throw new BadRequestException("Only pending bookings can be approved");
         }
-        throw new RuntimeException("Booking not found with id: " + id);
+
+        booking.setStatus(BookingStatus.APPROVED);
+        // Mark vehicle unavailable
+        Vehicle vehicle = booking.getVehicle();
+        vehicle.setAvailable(false);
+        vehicleRepository.save(vehicle);
+
+        return bookingMapper.toDTO(bookingRepository.save(booking));
     }
 
-    /**
-     * Complete a booking
-     */
-    public Booking completeBooking(Long id) {
-        Optional<Booking> booking = bookingRepository.findById(id);
-        if (booking.isPresent()) {
-            Booking existingBooking = booking.get();
-            existingBooking.setStatus("Completed");
-            bookingRepository.save(existingBooking);
+    @Transactional
+    public BookingDTO cancelBooking(Long id) {
+        Booking booking = bookingRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Booking not found with id: " + id));
 
-            // Update vehicle availability back to available
-            Vehicle vehicle = existingBooking.getVehicle();
-            vehicle.setAvailable(true);
-            vehicleRepository.save(vehicle);
-
-            return existingBooking;
+        if (booking.getStatus() == BookingStatus.COMPLETED) {
+            throw new BadRequestException("Cannot cancel a completed booking");
         }
-        throw new RuntimeException("Booking not found with id: " + id);
+
+        booking.setStatus(BookingStatus.CANCELLED);
+
+        // Make vehicle available again
+        Vehicle vehicle = booking.getVehicle();
+        vehicle.setAvailable(true);
+        vehicleRepository.save(vehicle);
+
+        return bookingMapper.toDTO(bookingRepository.save(booking));
     }
 
-    /**
-     * Get bookings by vehicle ID
-     */
-    public List<Booking> getBookingsByVehicleId(Long vehicleId) {
-        return bookingRepository.findByVehicleId(vehicleId);
+    @Transactional
+    public BookingDTO completeBooking(Long id) {
+        Booking booking = bookingRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Booking not found with id: " + id));
+
+        booking.setStatus(BookingStatus.COMPLETED);
+
+        // Make vehicle available again
+        Vehicle vehicle = booking.getVehicle();
+        vehicle.setAvailable(true);
+        vehicleRepository.save(vehicle);
+
+        return bookingMapper.toDTO(bookingRepository.save(booking));
+    }
+
+    public long getBookingCount() {
+        return bookingRepository.count();
+    }
+
+    public long getBookingCountByStatus(BookingStatus status) {
+        return bookingRepository.countByStatus(status);
+    }
+
+    public double getTotalRevenue() {
+        return bookingRepository.calculateTotalRevenue();
+    }
+
+    public List<Object[]> getMonthlyRevenue(int year) {
+        return bookingRepository.getMonthlyRevenue(year);
     }
 }

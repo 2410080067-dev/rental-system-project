@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { FaCar } from 'react-icons/fa';
 import { logout, isLoggedIn, isAdmin } from '../services/authService';
 import './Navbar.css';
 
@@ -21,11 +22,7 @@ const Navbar = () => {
       <div className="container-fluid">
         <Link className="navbar-brand" to="/">
           <span className="brand-logo" aria-hidden="true">
-            <svg width="28" height="28" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-              <path d="M6 36 C10 24, 20 18, 32 18 C44 18, 54 24, 58 36 L54 40 H46 L40 36 H24 L18 40 H10 L6 36 Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-              <circle cx="20" cy="44" r="3" fill="currentColor" />
-              <circle cx="44" cy="44" r="3" fill="currentColor" />
-            </svg>
+            <FaCar size={28} color="#ffffff" />
           </span>
           <span className="brand-text">Rental System</span>
         </Link>

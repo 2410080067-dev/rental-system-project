@@ -1,89 +1,81 @@
 package com.rental.service;
 
-import com.rental.model.Booking;
-import com.rental.model.Payment;
+import com.rental.exception.BadRequestException;
+import com.rental.exception.ResourceNotFoundException;
+import com.rental.model.*;
 import com.rental.repository.BookingRepository;
 import com.rental.repository.PaymentRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
-/**
- * Service class for Payment-related business logic
- */
 @Service
 public class PaymentService {
 
-    @Autowired
-    private PaymentRepository paymentRepository;
+    private final PaymentRepository paymentRepository;
+    private final BookingRepository bookingRepository;
+    private final BookingService bookingService;
 
-    @Autowired
-    private BookingRepository bookingRepository;
+    public PaymentService(PaymentRepository paymentRepository, BookingRepository bookingRepository,
+                          BookingService bookingService) {
+        this.paymentRepository = paymentRepository;
+        this.bookingRepository = bookingRepository;
+        this.bookingService = bookingService;
+    }
 
-    @Autowired
-    private BookingService bookingService;
+    @Transactional
+    public Payment processPayment(Long bookingId, Double amount, String paymentMethod) {
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new ResourceNotFoundException("Booking not found with id: " + bookingId));
 
-    /**
-     * Process payment for a booking
-     */
-    public Payment processPayment(Long bookingId, Double amount) {
-        // Validate booking exists
-        Optional<Booking> booking = bookingRepository.findById(bookingId);
-        if (booking.isEmpty()) {
-            throw new RuntimeException("Booking not found with id: " + bookingId);
+        if (booking.getStatus() == BookingStatus.COMPLETED) {
+            throw new BadRequestException("Booking is already paid and completed");
         }
 
-        // Check if amount matches booking total
-        Booking existingBooking = booking.get();
-        if (!amount.equals(existingBooking.getTotalAmount())) {
-            throw new RuntimeException("Payment amount does not match booking total. Expected: " + 
-                    existingBooking.getTotalAmount() + ", Received: " + amount);
+        if (booking.getStatus() == BookingStatus.CANCELLED) {
+            throw new BadRequestException("Cannot pay for a cancelled booking");
         }
 
-        // Create payment
+        Optional<Payment> existingPayment = paymentRepository.findByBookingId(bookingId);
+        if (existingPayment.isPresent() && existingPayment.get().getStatus() == PaymentStatus.SUCCESS) {
+            throw new BadRequestException("Payment already processed for this booking");
+        }
+
+        if (Math.abs(amount - booking.getTotalAmount()) > 0.01) {
+            throw new BadRequestException("Payment amount does not match booking total. Expected: $"
+                    + booking.getTotalAmount() + ", Received: $" + amount);
+        }
+
+        // Mock payment processing - simulate success
         Payment payment = new Payment();
-        payment.setBooking(existingBooking);
+        payment.setBooking(booking);
         payment.setAmount(amount);
+        payment.setPaymentMethod(paymentMethod != null ? paymentMethod : "CARD");
+        payment.setTransactionId("TXN-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase());
         payment.setPaymentDate(LocalDateTime.now());
-        payment.setStatus("Completed");
+        payment.setStatus(PaymentStatus.SUCCESS);
 
-        // Save payment
         Payment savedPayment = paymentRepository.save(payment);
 
-        // Mark booking as completed
+        // Complete the booking
         bookingService.completeBooking(bookingId);
 
         return savedPayment;
     }
 
-    /**
-     * Get payment by ID
-     */
     public Optional<Payment> getPaymentById(Long id) {
         return paymentRepository.findById(id);
     }
 
-    /**
-     * Get payment by booking ID
-     */
     public Optional<Payment> getPaymentByBookingId(Long bookingId) {
         return paymentRepository.findByBookingId(bookingId);
     }
 
-    /**
-     * Get all payments
-     */
     public List<Payment> getAllPayments() {
         return paymentRepository.findAll();
-    }
-
-    /**
-     * Get payments by status
-     */
-    public List<Payment> getPaymentsByStatus(String status) {
-        return paymentRepository.findByStatus(status);
     }
 }

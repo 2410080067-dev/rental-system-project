@@ -1,147 +1,81 @@
 package com.rental.controller;
 
 import com.rental.dto.BookingDTO;
-import com.rental.model.Booking;
 import com.rental.service.BookingService;
-import org.springframework.beans.factory.annotation.Autowired;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.util.HashMap;
+
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
-/**
- * Controller for Booking related endpoints
- */
 @RestController
 @RequestMapping("/bookings")
+@SecurityRequirement(name = "bearerAuth")
+@Tag(name = "Bookings", description = "Booking management endpoints")
 public class BookingController {
 
-    @Autowired
-    private BookingService bookingService;
+    private final BookingService bookingService;
 
-    /**
-     * Create a new booking
-     * POST /api/bookings/book
-     */
-    @PostMapping("/book")
-    public ResponseEntity<?> createBooking(@RequestBody BookingDTO bookingDTO) {
-        try {
-            LocalDate startDate = bookingDTO.getStartDate();
-            LocalDate endDate = bookingDTO.getEndDate();
-            Long userId = bookingDTO.getUserId();
-            Long vehicleId = bookingDTO.getVehicleId();
-
-            Booking booking = bookingService.createBooking(userId, vehicleId, startDate, endDate);
-
-            Map<String, Object> response = new HashMap<>();
-            response.put("success", true);
-            response.put("message", "Booking created successfully");
-            response.put("bookingId", booking.getId());
-            response.put("totalAmount", booking.getTotalAmount());
-            response.put("status", booking.getStatus());
-
-            return ResponseEntity.status(HttpStatus.CREATED).body(response);
-        } catch (RuntimeException e) {
-            Map<String, Object> error = new HashMap<>();
-            error.put("success", false);
-            error.put("message", e.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
-        } catch (Exception e) {
-            Map<String, Object> error = new HashMap<>();
-            error.put("success", false);
-            error.put("message", e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
-        }
+    public BookingController(BookingService bookingService) {
+        this.bookingService = bookingService;
     }
 
-    /**
-     * Get all bookings (Admin)
-     * GET /api/bookings
-     */
-    @GetMapping
-    public ResponseEntity<?> getAllBookings() {
-        try {
-            List<Booking> bookings = bookingService.getAllBookings();
-            return ResponseEntity.ok(bookings);
-        } catch (Exception e) {
-            Map<String, Object> error = new HashMap<>();
-            error.put("success", false);
-            error.put("message", e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
-        }
+    @PostMapping
+    @Operation(summary = "Create a new booking")
+    public ResponseEntity<BookingDTO> createBooking(
+            @RequestParam Long userId,
+            @RequestParam Long vehicleId,
+            @RequestParam String startDate,
+            @RequestParam String endDate) {
+        LocalDate start = LocalDate.parse(startDate);
+        LocalDate end = LocalDate.parse(endDate);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(bookingService.createBooking(userId, vehicleId, start, end));
     }
 
-    /**
-     * Get bookings by user ID
-     * GET /api/bookings/user/{userId}
-     */
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<?> getBookingsByUserId(@PathVariable Long userId) {
-        try {
-            List<Booking> bookings = bookingService.getBookingsByUserId(userId);
-            return ResponseEntity.ok(bookings);
-        } catch (Exception e) {
-            Map<String, Object> error = new HashMap<>();
-            error.put("success", false);
-            error.put("message", e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
-        }
-    }
-
-    /**
-     * Get booking by ID
-     * GET /api/bookings/{id}
-     */
     @GetMapping("/{id}")
-    public ResponseEntity<?> getBookingById(@PathVariable Long id) {
-        try {
-            Optional<Booking> booking = bookingService.getBookingById(id);
-            if (booking.isPresent()) {
-                return ResponseEntity.ok(booking.get());
-            } else {
-                Map<String, Object> error = new HashMap<>();
-                error.put("success", false);
-                error.put("message", "Booking not found");
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
-            }
-        } catch (Exception e) {
-            Map<String, Object> error = new HashMap<>();
-            error.put("success", false);
-            error.put("message", e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
-        }
+    @Operation(summary = "Get booking by ID")
+    public ResponseEntity<BookingDTO> getBookingById(@PathVariable Long id) {
+        return ResponseEntity.ok(bookingService.getBookingById(id));
     }
 
-    /**
-     * Cancel a booking
-     * PUT /api/bookings/{id}/cancel
-     */
+    @GetMapping("/user/{userId}")
+    @Operation(summary = "Get bookings for a user")
+    public ResponseEntity<List<BookingDTO>> getUserBookings(@PathVariable Long userId) {
+        return ResponseEntity.ok(bookingService.getBookingsByUserId(userId));
+    }
+
+    @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Get all bookings (Admin only)")
+    public ResponseEntity<List<BookingDTO>> getAllBookings() {
+        return ResponseEntity.ok(bookingService.getAllBookings());
+    }
+
+    @PutMapping("/{id}/approve")
+    @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Approve a booking (Admin only)")
+    public ResponseEntity<BookingDTO> approveBooking(@PathVariable Long id) {
+        return ResponseEntity.ok(bookingService.approveBooking(id));
+    }
+
     @PutMapping("/{id}/cancel")
-    public ResponseEntity<?> cancelBooking(@PathVariable Long id) {
-        try {
-            Booking cancelledBooking = bookingService.cancelBooking(id);
+    @Operation(summary = "Cancel a booking")
+    public ResponseEntity<BookingDTO> cancelBooking(@PathVariable Long id) {
+        return ResponseEntity.ok(bookingService.cancelBooking(id));
+    }
 
-            Map<String, Object> response = new HashMap<>();
-            response.put("success", true);
-            response.put("message", "Booking cancelled successfully");
-            response.put("booking", cancelledBooking);
-
-            return ResponseEntity.ok(response);
-        } catch (RuntimeException e) {
-            Map<String, Object> error = new HashMap<>();
-            error.put("success", false);
-            error.put("message", e.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
-        } catch (Exception e) {
-            Map<String, Object> error = new HashMap<>();
-            error.put("success", false);
-            error.put("message", e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
-        }
+    @PutMapping("/{id}/complete")
+    @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Mark booking as completed (Admin only)")
+    public ResponseEntity<BookingDTO> completeBooking(@PathVariable Long id) {
+        return ResponseEntity.ok(bookingService.completeBooking(id));
     }
 }

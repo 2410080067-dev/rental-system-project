@@ -45,14 +45,12 @@ const Register = () => {
         email: formData.email,
         phone: formData.phone,
         password: formData.password,
-        role: 'user',
       });
       const response = await register({
         name: formData.name,
         email: formData.email,
         phone: formData.phone,
         password: formData.password,
-        role: 'user',
       });
 
       if (response.success) {

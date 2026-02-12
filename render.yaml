@@ -1,0 +1,29 @@
+# ============================================
+# Render Blueprint — one-click deploy config
+# https://render.com/docs/blueprint-spec
+# ============================================
+services:
+  - type: web
+    name: rental-system-backend
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    region: oregon
+    plan: free
+    branch: main
+    healthCheckPath: /api/vehicles
+    envVars:
+      - key: PORT
+        value: "8081"
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
+      - key: DATABASE_URL
+        sync: false          # Render will prompt you to enter this
+      - key: DATABASE_USERNAME
+        sync: false
+      - key: DATABASE_PASSWORD
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true  # Render auto-generates a random secret
+      - key: CORS_ALLOWED_ORIGINS
+        sync: false          # Set after frontend is deployed

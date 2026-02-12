@@ -1,96 +1,117 @@
 package com.rental.service;
 
+import com.rental.dto.*;
+import com.rental.exception.*;
+import com.rental.mapper.UserMapper;
+import com.rental.model.Role;
 import com.rental.model.User;
 import com.rental.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.rental.security.JwtTokenProvider;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
-/**
- * Service class for User-related business logic
- */
 @Service
 public class UserService {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtTokenProvider tokenProvider;
+    private final UserMapper userMapper;
 
-    /**
-     * Register a new user
-     */
-    public User registerUser(User user) {
-        // Check if email already exists
-        Optional<User> existingUser = userRepository.findByEmail(user.getEmail());
-        if (existingUser.isPresent()) {
-            throw new RuntimeException("Email already registered");
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder,
+                       JwtTokenProvider tokenProvider, UserMapper userMapper) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.tokenProvider = tokenProvider;
+        this.userMapper = userMapper;
+    }
+
+    public AuthResponse register(RegisterRequest request) {
+        if (userRepository.existsByEmail(request.getEmail())) {
+            throw new DuplicateResourceException("Email already registered");
         }
 
-        // Set default role if not provided
-        if (user.getRole() == null || user.getRole().isEmpty()) {
-            user.setRole("user");
+        User user = new User();
+        user.setName(request.getName());
+        user.setEmail(request.getEmail());
+        user.setPhone(request.getPhone());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setRole(Role.USER);
+
+        User savedUser = userRepository.save(user);
+        String token = tokenProvider.generateToken(savedUser.getEmail(), savedUser.getRole().name(), savedUser.getId());
+
+        return new AuthResponse(true, "Registration successful", token,
+                savedUser.getId(), savedUser.getName(), savedUser.getEmail(), savedUser.getRole().name());
+    }
+
+    public AuthResponse registerAdmin(RegisterRequest request) {
+        if (userRepository.existsByEmail(request.getEmail())) {
+            throw new DuplicateResourceException("Email already registered");
         }
 
-        return userRepository.save(user);
+        User user = new User();
+        user.setName(request.getName());
+        user.setEmail(request.getEmail());
+        user.setPhone(request.getPhone());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setRole(Role.ADMIN);
+
+        User savedUser = userRepository.save(user);
+        String token = tokenProvider.generateToken(savedUser.getEmail(), savedUser.getRole().name(), savedUser.getId());
+
+        return new AuthResponse(true, "Admin registration successful", token,
+                savedUser.getId(), savedUser.getName(), savedUser.getEmail(), savedUser.getRole().name());
     }
 
-    /**
-     * Login user with email and password
-     */
-    public Optional<User> loginUser(String email, String password) {
-        return userRepository.findByEmailAndPassword(email, password);
-    }
+    public AuthResponse login(LoginRequest request) {
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new ResourceNotFoundException("Invalid email or password"));
 
-    /**
-     * Get user by ID
-     */
-    public Optional<User> getUserById(Long id) {
-        return userRepository.findById(id);
-    }
-
-    /**
-     * Get user by email
-     */
-    public Optional<User> getUserByEmail(String email) {
-        return userRepository.findByEmail(email);
-    }
-
-    /**
-     * Get all users
-     */
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
-    }
-
-    /**
-     * Update user
-     */
-    public User updateUser(Long id, User userDetails) {
-        Optional<User> user = userRepository.findById(id);
-        if (user.isPresent()) {
-            User existingUser = user.get();
-            if (userDetails.getName() != null) {
-                existingUser.setName(userDetails.getName());
-            }
-            if (userDetails.getEmail() != null) {
-                existingUser.setEmail(userDetails.getEmail());
-            }
-            if (userDetails.getPhone() != null) {
-                existingUser.setPhone(userDetails.getPhone());
-            }
-            if (userDetails.getPassword() != null) {
-                existingUser.setPassword(userDetails.getPassword());
-            }
-            return userRepository.save(existingUser);
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            throw new BadRequestException("Invalid email or password");
         }
-        throw new RuntimeException("User not found with id: " + id);
+
+        String token = tokenProvider.generateToken(user.getEmail(), user.getRole().name(), user.getId());
+
+        return new AuthResponse(true, "Login successful", token,
+                user.getId(), user.getName(), user.getEmail(), user.getRole().name());
     }
 
-    /**
-     * Delete user
-     */
+    public UserDTO getUserById(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
+        return userMapper.toDTO(user);
+    }
+
+    public List<UserDTO> getAllUsers() {
+        return userRepository.findAll().stream()
+                .map(userMapper::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    public UserDTO updateUser(Long id, UserDTO userDTO) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
+
+        if (userDTO.getName() != null) user.setName(userDTO.getName());
+        if (userDTO.getEmail() != null) user.setEmail(userDTO.getEmail());
+        if (userDTO.getPhone() != null) user.setPhone(userDTO.getPhone());
+
+        return userMapper.toDTO(userRepository.save(user));
+    }
+
     public void deleteUser(Long id) {
+        if (!userRepository.existsById(id)) {
+            throw new ResourceNotFoundException("User not found with id: " + id);
+        }
         userRepository.deleteById(id);
+    }
+
+    public long getUserCount() {
+        return userRepository.count();
     }
 }
