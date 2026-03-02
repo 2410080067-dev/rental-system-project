@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { isLoggedIn } from '../services/authService';
 import './Home.css';
 
 /**
@@ -15,7 +16,7 @@ const Home = () => {
       name: 'Premium Sedan',
       category: 'Cars',
       image: 'https://images.unsplash.com/photo-1552519507-da3effff991c?w=400&h=300&fit=crop',
-      price: '$50/day',
+      price: '₹4000/day',
       rating: '4.8',
       reviews: '234'
     },
@@ -24,7 +25,7 @@ const Home = () => {
       name: 'Sport Motorcycle',
       category: 'Bikes',
       image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop',
-      price: '$25/day',
+      price: '₹2000/day',
       rating: '4.9',
       reviews: '156'
     },
@@ -33,7 +34,7 @@ const Home = () => {
       name: 'Power Tools Set',
       category: 'Tools',
       image: 'https://images.unsplash.com/photo-1530124566582-a618bc2615dc?w=400&h=300&fit=crop',
-      price: '$15/day',
+      price: '₹1200/day',
       rating: '4.7',
       reviews: '89'
     },
@@ -42,7 +43,7 @@ const Home = () => {
       name: 'SUV Explorer',
       category: 'Cars',
       image: 'https://images.unsplash.com/photo-1606611013016-969c19d4a42f?w=400&h=300&fit=crop',
-      price: '$75/day',
+      price: '₹6000/day',
       rating: '4.9',
       reviews: '312'
     }
@@ -143,9 +144,11 @@ const Home = () => {
               <Link to="/vehicles" className="btn btn-hero btn-primary">
                 <i className="fas fa-search"></i> Browse Vehicles
               </Link>
-              <Link to="/register" className="btn btn-hero btn-secondary">
-                <i className="fas fa-rocket"></i> Get Started
-              </Link>
+              {!isLoggedIn() && (
+                <Link to="/register" className="btn btn-hero btn-secondary">
+                  <i className="fas fa-rocket"></i> Get Started
+                </Link>
+              )}
             </div>
           </div>
         </div>

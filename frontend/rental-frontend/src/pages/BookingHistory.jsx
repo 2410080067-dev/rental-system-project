@@ -130,7 +130,7 @@ const BookingHistory = () => {
 
                   <div className="detail-item">
                     <span className="label">Total Amount:</span>
-                    <span className="value amount">${booking.totalPrice}</span>
+                    <span className="value amount">₹{booking.totalPrice}</span>
                   </div>
                 </div>
 

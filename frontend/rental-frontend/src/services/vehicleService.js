@@ -1,7 +1,7 @@
 import API from './api';
 import axios from 'axios';
 
-const API_BASE = (process.env.REACT_APP_API_URL || 'http://localhost:8081') + '/api';
+const API_BASE = (process.env.REACT_APP_API_URL || 'https://rental-system-project.onrender.com') + '/api';
 
 /**
  * Vehicle Service — handles all vehicle-related API calls

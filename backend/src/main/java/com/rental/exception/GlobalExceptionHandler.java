@@ -1,6 +1,7 @@
 package com.rental.exception;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.FieldError;
@@ -62,11 +63,12 @@ public class GlobalExceptionHandler {
         return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred");
     }
 
+    @SuppressWarnings("null")
     private ResponseEntity<Map<String, Object>> buildResponse(HttpStatus status, String message) {
         Map<String, Object> body = new HashMap<>();
         body.put("success", false);
         body.put("message", message);
         body.put("timestamp", LocalDateTime.now().toString());
-        return new ResponseEntity<>(body, status);
+        return new ResponseEntity<>(body, (HttpStatusCode) status);
     }
 }

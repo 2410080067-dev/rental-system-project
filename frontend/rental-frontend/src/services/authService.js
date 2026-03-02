@@ -6,7 +6,7 @@ import API from './api';
 
 export const register = async (userData) => {
   try {
-    const response = await API.post('/api/auth/register', userData);
+   const response = await API.post('/api/auth/register', userData);
     return response.data;
   } catch (error) {
     const serverMessage =

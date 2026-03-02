@@ -32,6 +32,7 @@ public class BookingService {
         this.bookingMapper = bookingMapper;
     }
 
+    @SuppressWarnings("null")
     @Transactional
     public BookingDTO createBooking(Long userId, Long vehicleId, LocalDate startDate, LocalDate endDate) {
         User user = userRepository.findById(userId)
@@ -85,12 +86,14 @@ public class BookingService {
                 .collect(Collectors.toList());
     }
 
+    @SuppressWarnings("null")
     public BookingDTO getBookingById(Long id) {
         Booking booking = bookingRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Booking not found with id: " + id));
         return bookingMapper.toDTO(booking);
     }
 
+    @SuppressWarnings("null")
     @Transactional
     public BookingDTO approveBooking(Long id) {
         Booking booking = bookingRepository.findById(id)
@@ -109,6 +112,7 @@ public class BookingService {
         return bookingMapper.toDTO(bookingRepository.save(booking));
     }
 
+    @SuppressWarnings("null")
     @Transactional
     public BookingDTO cancelBooking(Long id) {
         Booking booking = bookingRepository.findById(id)
@@ -128,6 +132,7 @@ public class BookingService {
         return bookingMapper.toDTO(bookingRepository.save(booking));
     }
 
+    @SuppressWarnings("null")
     @Transactional
     public BookingDTO completeBooking(Long id) {
         Booking booking = bookingRepository.findById(id)

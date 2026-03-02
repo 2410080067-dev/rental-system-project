@@ -125,7 +125,7 @@ const BookVehicle = () => {
                 Category: <strong>{vehicle.category}</strong>
               </p>
               <p className="text-muted">
-                Price: <strong className="text-primary">${vehicle.pricePerDay}/day</strong>
+                Price: <strong className="text-primary">₹{vehicle.pricePerDay}/day</strong>
               </p>
               <p className="text-muted">
                 Status:{' '}
@@ -188,11 +188,11 @@ const BookVehicle = () => {
                     </div>
                     <div className="summary-item">
                       <span>Price per Day:</span>
-                      <strong>${vehicle.pricePerDay}</strong>
+                      <strong>₹{vehicle.pricePerDay}</strong>
                     </div>
                     <div className="summary-item total">
                       <span>Total Amount:</span>
-                      <strong>${totalAmount.toFixed(2)}</strong>
+                      <strong>₹{totalAmount.toFixed(2)}</strong>
                     </div>
                   </div>
                 )}

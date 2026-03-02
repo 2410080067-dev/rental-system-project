@@ -81,6 +81,7 @@ public class UserService {
                 user.getId(), user.getName(), user.getEmail(), user.getRole().name());
     }
 
+    @SuppressWarnings("null")
     public UserDTO getUserById(Long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
@@ -93,6 +94,7 @@ public class UserService {
                 .collect(Collectors.toList());
     }
 
+    @SuppressWarnings("null")
     public UserDTO updateUser(Long id, UserDTO userDTO) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
@@ -104,6 +106,7 @@ public class UserService {
         return userMapper.toDTO(userRepository.save(user));
     }
 
+    @SuppressWarnings("null")
     public void deleteUser(Long id) {
         if (!userRepository.existsById(id)) {
             throw new ResourceNotFoundException("User not found with id: " + id);

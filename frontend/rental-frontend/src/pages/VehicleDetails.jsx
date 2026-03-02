@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { FaCar, FaMotorcycle, FaTools, FaBox, FaArrowLeft, FaCheckCircle, FaTimesCircle, FaTag, FaDollarSign, FaCogs, FaInfoCircle, FaStar, FaStarHalfAlt, FaRegStar } from 'react-icons/fa';
+import { FaCar, FaMotorcycle, FaTools, FaBox, FaArrowLeft, FaCheckCircle, FaTimesCircle, FaTag, FaRupeeSign, FaCogs, FaInfoCircle, FaStar, FaStarHalfAlt, FaRegStar } from 'react-icons/fa';
 import { getVehicleById } from '../services/vehicleService';
 import { getReviewsByVehicleId, createReview } from '../services/reviewService';
 import { isLoggedIn, getCurrentUser } from '../services/authService';
@@ -81,6 +81,20 @@ const VehicleDetails = () => {
       default:
         return <FaBox size={28} color="#6c757d" />;
     }
+  };
+
+  // Default vehicle images by category (fallback if DB image is broken)
+  const getDefaultVehicleImage = (vehicle) => {
+    const categoryImages = {
+      sedan: 'https://images.unsplash.com/photo-1550355291-bbee04a92027?w=600&fit=crop',
+      suv: 'https://images.unsplash.com/photo-1519245659620-e859806a8d7b?w=600&fit=crop',
+      luxury: 'https://images.unsplash.com/photo-1555215695-3004980ad54e?w=600&fit=crop',
+      sports: 'https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=600&fit=crop',
+      bike: 'https://images.unsplash.com/photo-1558981806-ec527fa84c39?w=600&fit=crop',
+      tool: 'https://images.unsplash.com/photo-1581147060639-02378ff5ca30?w=600&fit=crop',
+    };
+    const cat = (vehicle?.category || vehicle?.type || '').toLowerCase();
+    return categoryImages[cat] || 'https://images.unsplash.com/photo-1549317661-bd32c8ce0afa?w=600&fit=crop';
   };
 
   const getSpecifications = (vehicle) => {
@@ -191,12 +205,12 @@ const VehicleDetails = () => {
             <div className="col-lg-6">
               <div className="details-image-wrapper">
                 <img
-                  src={vehicle.imageUrl || 'https://via.placeholder.com/600x400?text=No+Image'}
+                  src={vehicle.imageUrl || getDefaultVehicleImage(vehicle)}
                   alt={vehicle.name}
                   className="details-image"
                   onError={(e) => {
                     e.target.onerror = null;
-                    e.target.src = 'https://via.placeholder.com/600x400?text=No+Image';
+                    e.target.src = getDefaultVehicleImage(vehicle);
                   }}
                 />
                 <span className={`badge details-badge ${vehicle.available ? 'bg-success' : 'bg-danger'}`}>
@@ -231,7 +245,7 @@ const VehicleDetails = () => {
 
                 {/* Price */}
                 <div className="details-price">
-                  <FaDollarSign size={20} />
+                  <FaRupeeSign size={20} />
                   <span className="price-amount">{vehicle.pricePerDay}</span>
                   <span className="price-period">/ day</span>
                 </div>

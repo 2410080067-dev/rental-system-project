@@ -1,7 +1,5 @@
 package com.rental.controller;
 
-import com.rental.dto.PaymentDTO;
-import com.rental.mapper.BookingMapper;
 import com.rental.model.Payment;
 import com.rental.service.PaymentService;
 import io.swagger.v3.oas.annotations.Operation;

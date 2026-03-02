@@ -31,6 +31,7 @@ public class ReviewService {
         this.reviewMapper = reviewMapper;
     }
 
+    @SuppressWarnings("null")
     public ReviewDTO createReview(Long userId, ReviewDTO reviewDTO) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
@@ -68,6 +69,7 @@ public class ReviewService {
         return reviewRepository.getAverageRatingByVehicleId(vehicleId);
     }
 
+    @SuppressWarnings("null")
     public void deleteReview(Long id) {
         if (!reviewRepository.existsById(id)) {
             throw new ResourceNotFoundException("Review not found");

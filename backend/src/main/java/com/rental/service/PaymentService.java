@@ -27,6 +27,7 @@ public class PaymentService {
         this.bookingService = bookingService;
     }
 
+    @SuppressWarnings("null")
     @Transactional
     public Payment processPayment(Long bookingId, Double amount, String paymentMethod) {
         Booking booking = bookingRepository.findById(bookingId)
@@ -67,6 +68,7 @@ public class PaymentService {
         return savedPayment;
     }
 
+    @SuppressWarnings("null")
     public Optional<Payment> getPaymentById(Long id) {
         return paymentRepository.findById(id);
     }

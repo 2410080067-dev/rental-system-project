@@ -27,8 +27,12 @@ const AdminDashboard = () => {
   });
 
   useEffect(() => {
+    // Debug: Log current user info
+    console.log('Current role:', localStorage.getItem('userRole'));
+    console.log('Is admin:', isAdmin());
+    
     if (!isAdmin()) {
-      setError('You do not have admin access');
+      setError('You do not have admin access. Please log in with an admin account.');
       return;
     }
     fetchData();
@@ -232,7 +236,7 @@ const AdminDashboard = () => {
                 <div className="card text-white bg-warning h-100">
                   <div className="card-body">
                     <h6 className="card-title">Total Revenue</h6>
-                    <h2>${stats.totalRevenue?.toFixed(2) || '0.00'}</h2>
+                    <h2>₹{stats.totalRevenue?.toFixed(2) || '0.00'}</h2>
                   </div>
                 </div>
               </div>
@@ -250,7 +254,7 @@ const AdminDashboard = () => {
                           <CartesianGrid strokeDasharray="3 3" />
                           <XAxis dataKey="month" />
                           <YAxis />
-                          <Tooltip formatter={(val) => `$${val.toFixed(2)}`} />
+                          <Tooltip formatter={(val) => `₹${val.toFixed(2)}`} />
                           <Bar dataKey="revenue" fill="#4361ee" radius={[4, 4, 0, 0]} />
                         </BarChart>
                       </ResponsiveContainer>
@@ -365,7 +369,7 @@ const AdminDashboard = () => {
                         </td>
                         <td><strong>{v.name}</strong></td>
                         <td>{v.category}</td>
-                        <td>${v.pricePerDay}</td>
+                        <td>₹{v.pricePerDay}</td>
                         <td>{v.averageRating > 0 ? `${v.averageRating.toFixed(1)} ★` : 'N/A'}</td>
                         <td>
                           <span className={`badge ${v.available ? 'bg-success' : 'bg-danger'}`} style={{ cursor: 'pointer' }} onClick={() => handleToggle(v.id)}>
@@ -408,7 +412,7 @@ const AdminDashboard = () => {
                       <td>{b.userName}</td>
                       <td>{b.vehicleName}</td>
                       <td>{new Date(b.startDate).toLocaleDateString()} - {new Date(b.endDate).toLocaleDateString()}</td>
-                      <td>${b.totalPrice}</td>
+                      <td>₹{b.totalPrice}</td>
                       <td><span className={`badge ${getStatusBadge(b.status)}`}>{b.status}</span></td>
                       <td>
                         {b.status === 'PENDING' && (

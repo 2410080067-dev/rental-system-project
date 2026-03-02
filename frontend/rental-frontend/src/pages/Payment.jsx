@@ -139,14 +139,14 @@ const Payment = () => {
 
               <div className="summary-item">
                 <span>Price Per Day:</span>
-                <strong>${booking.vehiclePricePerDay}</strong>
+                <strong>₹{booking.vehiclePricePerDay}</strong>
               </div>
 
               <div className="summary-divider"></div>
 
               <div className="summary-item total">
                 <span>Total Amount Due:</span>
-                <strong>${booking.totalAmount}</strong>
+                <strong>₹{booking.totalAmount}</strong>
               </div>
             </div>
           </div>
@@ -212,7 +212,7 @@ const Payment = () => {
                   className="btn btn-success btn-lg w-100"
                   disabled={processing}
                 >
-                  {processing ? 'Processing...' : `Pay $${booking.totalAmount}`}
+                  {processing ? 'Processing...' : `Pay ₹${booking.totalAmount}`}
                 </button>
               </form>
 

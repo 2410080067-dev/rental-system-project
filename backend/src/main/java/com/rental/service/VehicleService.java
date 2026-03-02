@@ -33,6 +33,7 @@ public class VehicleService {
                 .collect(Collectors.toList());
     }
 
+    @SuppressWarnings("null")
     public VehicleDTO getVehicleById(Long id) {
         Vehicle vehicle = vehicleRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Vehicle not found with id: " + id));
@@ -68,12 +69,14 @@ public class VehicleService {
                 .collect(Collectors.toList());
     }
 
+    @SuppressWarnings("null")
     public VehicleDTO createVehicle(VehicleRequest request) {
         Vehicle vehicle = vehicleMapper.toEntity(request);
         Vehicle saved = vehicleRepository.save(vehicle);
         return vehicleMapper.toDTO(saved);
     }
 
+    @SuppressWarnings("null")
     public VehicleDTO updateVehicle(Long id, VehicleRequest request) {
         Vehicle vehicle = vehicleRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Vehicle not found with id: " + id));
@@ -83,6 +86,7 @@ public class VehicleService {
         return vehicleMapper.toDTO(updated);
     }
 
+    @SuppressWarnings("null")
     public void deleteVehicle(Long id) {
         if (!vehicleRepository.existsById(id)) {
             throw new ResourceNotFoundException("Vehicle not found with id: " + id);
@@ -90,6 +94,7 @@ public class VehicleService {
         vehicleRepository.deleteById(id);
     }
 
+    @SuppressWarnings("null")
     public VehicleDTO toggleAvailability(Long id) {
         Vehicle vehicle = vehicleRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Vehicle not found with id: " + id));
